@@ -33,6 +33,12 @@ nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
+" Map Ctrl-a h to navigate, so it matches tmux
+nnoremap <C-a>h :wincmd h<CR>
+nnoremap <C-a>j :wincmd j<CR>
+nnoremap <C-a>k :wincmd k<CR>
+nnoremap <C-a>l :wincmd l<CR>
+
 autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
 autocmd FileType eruby setlocal expandtab shiftwidth=2 tabstop=2
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
