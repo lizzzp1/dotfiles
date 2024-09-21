@@ -249,6 +249,10 @@ set statusline+=%l/%L
 set statusline+=\ %{LinterStatus()}
 set statusline=%{FugitiveStatusline()}
 " set statusline+=%{GitStatus()}
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+" faster for saves
+nmap <leader>w :w!<cr>
 
 " Fuzzy search
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
@@ -297,7 +301,6 @@ nnoremap gdh :diffget //2<CR>
 nnoremap gdl :diffget //3<CR>
 
 " Fugitive
-
 map <Leader><Leader>c :Git commit<cr>
 map <Leader><Leader>b :Git blame<cr>
 map <Leader><Leader>s :Git status<cr>
@@ -315,3 +318,18 @@ function! PromoteToLet()
   :.s/\(\w\+\)\s\+=\s\+\(.*\)$/let(:\1) { \2 }/
   :normal ==
 endfunction
+
+
+" COC lsp additional settings
+nmap gd <Plug>(coc-definition)
+nmap K <Plug>(coc-hover)
+
+" remap to confirm completion
+inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
+inoremap <silent><expr> <cr> coc#pum#visible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
+" Use <c-space> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
