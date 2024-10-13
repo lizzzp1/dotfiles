@@ -1,0 +1,28 @@
+alias c='git commit'
+alias d='git diff'
+alias aa='git add . && git status -s'
+alias gp='git pull'
+alias gap='git dd . --patch'
+alias gl='git log'
+alias gs='git status'
+alias gp='git branch --merged | egrep -v "(^\*|master|staging)" | xargs git branch -d'
+alias co='git checkout'
+alias g='git'
+
+alias spec='bin/rspec'
+alias rf='bin/rails rubocop -A'
+alias rc='bin/rails c'
+alias rs='bin/rails s'
+alias rps='ps aux|grep rails'
+
+alias rt='tmux source-file ~/.tmux.conf'
+alias tma='tmux attach -t'
+alias tmn='tmux new -s'
+alias tmm='tmux new -s main'
+
+alias s='source ~/.zsh_profile'
+
+export BUNDLER_EDITOR=nvim
+export EDITOR=nvim
+
+export DISABLE_SPRING=true
