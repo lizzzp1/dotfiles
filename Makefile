@@ -1,18 +1,18 @@
-UNAME := $(shell uname)
 DOT_PATH := $(shell pwd)
 
-vim_dotfiles := $(HOME)/.vimrc
-tmux_dotfiles := $(HOME)/.tmux.conf
-zsh_dotfiles := $(HOME)/.zshrc $(HOME)/.zsh_profile
 git_dotfiles := $(HOME)/.gitconfig
+psql_dotfiles := $(HOME)/.psqlrc
+tmux_dotfiles := $(HOME)/.tmux.conf
+vim_dotfiles := $(HOME)/.vimrc
+zsh_dotfiles := $(HOME)/.zshrc $(HOME)/.zsh_profile
 
-# create sym links
 $(HOME)/.%: %
-			ln -sf $(DOT_PATH)/$^ $@
+	ln -sf $(DOT_PATH)/$^ $@
 
-vim: $(vim_dotfiles)
-tmux: $(tmux_dotfiles)
-zsh: $(zsh_dotfiles)
 git: $(git_dotfiles)
+psql: $(psql_dotfiles)
+tmux: $(tmux_dotfiles)
+vim: $(vim_dotfiles)
+zsh: $(zsh_dotfiles)
 
-all: vim zsh git tmux
+all: vim zsh git tmux psql
