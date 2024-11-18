@@ -2,7 +2,14 @@
 
 echo "Beginning setting up Dotfiles..."
 
-make all
+# symlinks for codespaces
+export DOTFILES=/workspaces/.codespaces/.persistedshare/dotfiles
+ln -sf $DOTFILES/.zshrc $HOME/.zshrc
+ln -sf $DOTFILES/.zsh_profile $HOME/.zsh_profile
+ln -sf $DOTFILES/.vimrc $HOME/.vimrc
+ln -sf $DOTFILES/.tmux.conf $HOME/.tmux.conf
+ln -sf $DOTFILES/.psqlrc $HOME/.psqlrc
+ln -sf $DOTFILES/.gitconfig $HOME/.gitconfig
 
 sudo apt update && sudo apt install -y zsh nodejs npm fzf tmux
 ## Install specific version of neovim
