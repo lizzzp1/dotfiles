@@ -4,6 +4,7 @@ git_dotfiles := $(HOME)/.gitconfig
 psql_dotfiles := $(HOME)/.psqlrc
 tmux_dotfiles := $(HOME)/.tmux.conf
 vim_dotfiles := $(HOME)/.vimrc
+nvim_dotfiles := $(HOME)/.config/nvim/init.vim
 zsh_dotfiles := $(HOME)/.zshrc $(HOME)/.zsh_profile
 
 $(HOME)/.%: %
@@ -13,6 +14,7 @@ git: $(git_dotfiles)
 psql: $(psql_dotfiles)
 tmux: $(tmux_dotfiles)
 vim: $(vim_dotfiles)
+nvim: $(vim_dotfiles)
 zsh: $(zsh_dotfiles)
 
-all: vim zsh git tmux psql
+all: vim nvim zsh git tmux psql
