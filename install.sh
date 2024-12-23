@@ -1,16 +1,17 @@
 #!/bin/bash
 
 echo "Beginning setting up Dotfiles..."
-DOTFILES="/workspaces/.codespaces/.persistedshare/dotfiles"
+CODESPACES_DOTFILES="/workspaces/.codespaces/.persistedshare/dotfiles"
+DOTFILES=$(pwd)
 
 function create_symlinks() {
-  ln -sf $DOTFILES/.zshrc $HOME/.zshrc
-  ln -sf $DOTFILES/.zsh_profile $HOME/.zsh_profile
-  ln -sf $DOTFILES/.config/nvim/init.vim
-  ln -sf $DOTFILES/.vimrc $HOME/.vimrc
-  ln -sf $DOTFILES/.tmux.conf $HOME/.tmux.conf
-  ln -sf $DOTFILES/.psqlrc $HOME/.psqlrc
-  ln -sf $DOTFILES/.gitconfig $HOME/.gitconfig
+  ln -sf $1/.zshrc $HOME/.zshrc
+  ln -sf $1/.zsh_profile $HOME/.zsh_profile
+  ln -sf $1/.config/nvim/init.vim
+  ln -sf $1/.vimrc $HOME/.vimrc
+  ln -sf $1/.tmux.conf $HOME/.tmux.conf
+  ln -sf $1/.psqlrc $HOME/.psqlrc
+  ln -sf $1/.gitconfig $HOME/.gitconfig
 }
 
 function install_packages() {
@@ -26,7 +27,6 @@ function install_packages() {
 
 function lsp_setup() {
   gem install solargraph
-  sudo npm install -g typescript typescript-language-server
 }
 
 function tmux_setup() {
@@ -35,35 +35,32 @@ function tmux_setup() {
   chomod +x ~/.tmux/plugins/tpm/scripts/install_plugins.sh
 }
 
-# symlinks for codespaces
-export DOTFILES=/workspaces/.codespaces/.persistedshare/dotfiles
+function nvim_setup() {
+  ### neovim configuration setup
+  mkdir -p $HOME/.config/nvim
+  ## Set zsh as the default shell
+  sudo chsh "$(id -un)" --shell "/usr/bin/zsh"
+
+  ## Install plugins automatically
+  nvim --headless +PluginInstall +qall
+}
 
 
-if [-e "$CODESPACES_DOTFILES"]; then
-  creat_symlinks
-  echo "in codespaces"
+if [ -e "$CODESPACES_DOTFILES" ]; then
+  create_symlinks $CODESPACES_DOTFILES
+  install_packages
+  nvim_setup
+  ## Copilot setup
+  git clone https://github.com/github/copilot.vim ~/.config/nvim/pack/github/start/copilot.vim
+  git clone -b canary https://github.com/CopilotC-Nvim/CopilotChat.nvim ~/.config/nvim/pack/github/start/CopilotChat.nvim
+
+  tmux_setup
 else
-  "not in codespaces"
+  create_symlinks $DOTFILES
 fi
 
-
-install_packages
-
-### neovim configuration setup
-mkdir -p $HOME/.config/nvim
-## Set zsh as the default shell
-sudo chsh "$(id -un)" --shell "/usr/bin/zsh"
-
-## Install plugins automatically
-nvim --headless +PluginInstall +qall
-
-## Copilot setup
-git clone https://github.com/github/copilot.vim ~/.config/nvim/pack/github/start/copilot.vim
-git clone -b canary https://github.com/CopilotC-Nvim/CopilotChat.nvim ~/.config/nvim/pack/github/start/CopilotChat.nvim
-
-tmux_setup
-
-if [-d "$HOME/nvim/usr/share/nvim/runtime"]; then
+if [ -d "$HOME/nvim/usr/share/nvim/runtime" ]; then
   echo "export VIMRUNTIME=$HOME/nvim/usr/share/nvim/runtime" >> ~/.zshrc
 fi
+
 echo "Dotfile setup complete."
