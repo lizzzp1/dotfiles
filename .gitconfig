@@ -1,0 +1,10 @@
+[user]
+	name = Liz
+	email = lizpny@pm.me
+[core]
+	editor = nvim
+[alias]
+  co = checkout
+  gs = status
+  gp = pull
+  gp = push
