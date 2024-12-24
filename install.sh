@@ -6,7 +6,6 @@ DOTFILES=$(pwd)
 
 function create_symlinks() {
   ln -sf $1/.zshrc $HOME/.zshrc
-  ln -sf $1/.zsh_profile $HOME/.zsh_profile
   ln -sf $1/.config/nvim/init.vim
   ln -sf $1/.vimrc $HOME/.vimrc
   ln -sf $1/.tmux.conf $HOME/.tmux.conf
@@ -18,11 +17,6 @@ function install_packages() {
   sudo apt-get update
   sudo apt install -y python3 python3-pip ripgrep
   sudo apt install -y zsh nodejs npm fzf tmux
-  sudo apt-get install -y neovim
-  which nvim || echo "Neovim did not installed correctly."
-  # Install vim-plug if it's not installed
-  curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 }
 
 function lsp_setup() {
@@ -36,24 +30,20 @@ function tmux_setup() {
 }
 
 function nvim_setup() {
-  ### neovim configuration setup
-  mkdir -p $HOME/.config/nvim
-  ## Set zsh as the default shell
-  sudo chsh "$(id -un)" --shell "/usr/bin/zsh"
-
-  ## Install plugins automatically
+  sudo mkdir -p ~/.config/nvim
+  sudo apt-get install -y neovim
+  which nvim || echo "Neovim did not installed correctly."
+  # Install vim-plug if it's not installed
+  sudo curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   nvim --headless +PluginInstall +qall
 }
 
 
 if [ -e "$CODESPACES_DOTFILES" ]; then
-  create_symlinks $CODESPACES_DOTFILES
-  install_packages
   nvim_setup
-  ## Copilot setup
-  git clone https://github.com/github/copilot.vim ~/.config/nvim/pack/github/start/copilot.vim
-  git clone -b canary https://github.com/CopilotC-Nvim/CopilotChat.nvim ~/.config/nvim/pack/github/start/CopilotChat.nvim
-
+  install_packages
+  create_symlinks $CODESPACES_DOTFILES
   tmux_setup
 else
   create_symlinks $DOTFILES
