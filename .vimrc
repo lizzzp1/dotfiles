@@ -79,6 +79,10 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.6' }
+
+if empty(glob('~/.local/share/nvim/plugged'))
+  call plug#install()
+endif
 call plug#end()
 
 " tender plugin

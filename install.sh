@@ -34,11 +34,10 @@ function tmux_setup() {
 function nvim_setup() {
   sudo mkdir -p ~/.config/nvim
   sudo apt-get install -y neovim
-  which nvim || echo "Neovim did not installed correctly."
+  which nvim || echo "Neovim did not install correctly."
   # Install vim-plug if it's not installed
   sudo curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  nvim --headless +PluginInstall +qall
 }
 
 
