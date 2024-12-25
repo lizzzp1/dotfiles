@@ -6,7 +6,7 @@ DOTFILES=$(pwd)
 
 function create_symlinks() {
   ln -sf $1/.zshrc $HOME/.zshrc
-  ln -sf $1/.config/nvim/init.vim
+  ln -sf $1/.config/nvim/init.vim $HOME/.config/nvim/init.vim
   ln -sf $1/.vimrc $HOME/.vimrc
   ln -sf $1/.tmux.conf $HOME/.tmux.conf
   ln -sf $1/.psqlrc $HOME/.psqlrc
@@ -26,7 +26,9 @@ function lsp_setup() {
 function tmux_setup() {
   mkdir -p $HOME/.tmux/plugins
   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-  chomod +x ~/.tmux/plugins/tpm/scripts/install_plugins.sh
+  if [ -d ~/.tmux/plugins/tpm ]; then
+    chmod +x ~/.tmux/plugins/tpm/scripts/install_plugins.sh
+  fi
 }
 
 function nvim_setup() {
