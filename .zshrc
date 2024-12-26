@@ -69,6 +69,10 @@ ulimit -n
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
+del_branches() {
+  git branch | grep -v 'main' | grep -v 'dev' | grep -v "$1" | xargs git branch -D
+}
+
 
 #zscaler
 export CERT_PATH="/Users/$(whoami)/ca_certs/zscaler-custom-ca-bundle.pem"
