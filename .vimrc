@@ -49,6 +49,8 @@ autocmd FileType typescript setlocal formatprg=prettier\ --parser\ typescript
 autocmd FileType go setlocal shiftwidth=2
 autocmd FileType go setlocal softtabstop=2
 autocmd FileType go setlocal expandtab
+autocmd FileType python set sw=4 sts=4 et
+autocmd! FileType json set sw=2 sts=2 expandtab
 
 " so gf knows about rb files
 augroup rubypath

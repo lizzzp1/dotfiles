@@ -8,6 +8,7 @@ alias gs='git status'
 alias gp='git branch --merged | egrep -v "(^\*|master|staging)" | xargs git branch -d'
 alias co='git checkout'
 alias g='git'
+alias gd='git difftool --no-symlinks --dir-diff'
 
 alias spec='bin/rspec'
 alias rf='bin/rails rubocop -A'

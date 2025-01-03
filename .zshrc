@@ -1,8 +1,4 @@
 zmodload zsh/zprof
-source ~/.zsh_profile
-
-# If you come from bash you might have to change your $PATH.
- export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -10,11 +6,6 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
 
 plugins=(git)
-
-local private="${HOME}/.zsh.d/private.sh"
-if [ -e ${private} ]; then
-	  . ${private}
-fi
 
 export EDITOR='nvim'
 export VISUAL='nvim'
@@ -62,31 +53,34 @@ SAVEHIST=50000
 # # Execute commands using history (e.g.: using !$) immediately:
  unsetopt HIST_VERIFY
 
-source /Users/lizpineda/.docker/init-zsh.sh || true # Added by Docker Desktop
-
 ulimit -n
 
+git_prompt_info() {
+  local dirstatus=" OK"
+  local dirty="%{$fg_bold[red]%} X%{$reset_color%}"
+
+  if [[ ! -z $(git status --porcelain 2> /dev/null | tail -n1) ]]; then
+    dirstatus=$dirty
+  fi
+
+  ref=$(git symbolic-ref HEAD 2> /dev/null) || \
+  ref=$(git rev-parse --short HEAD 2> /dev/null) || return
+  echo " %{$fg_bold[green]%}${ref#refs/heads/}$dirstatus%{$reset_color%}"
+}
+PROMPT='${dir_info}$(git_prompt_info) %(1j.$promptjobs.$promptnormal)'
+
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-
-#zscaler
-export CERT_PATH="/Users/$(whoami)/ca_certs/zscaler-custom-ca-bundle.pem"
-export CERT_DIR="/Users/$(whoami)/ca_certs/"
-export SSL_CERT_FILE=${CERT_PATH}
-export SSL_CERT_DIR=${CERT_DIR}
-export REQUESTS_CA_BUNDLE=${CERT_PATH} # PIP,
-export NODE_EXTRA_CA_CERTS=${CERT_PATH} # NPM
-export AWS_CA_BUNDLE=${CERT_PATH}
-export PIP_CERT=${CERT_PATH}
-export HTTPLIB2_CA_CERTS=${CERT_PATH}
-export SSL_CERT_FILE="${CERT_PATH}"
-export GAM_CA_FILE=${CERT_PATH}
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=$HOME/go
+export GOROOT=/usr/local/go
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.zsh_files/paths ] && source ~/.zsh_files/paths
 [ -f $ZSH/oh-my-zsh.sh ] && source $ZSH/oh-my-zsh.sh
 [ -f ~/.aliases ] && source ~/.aliases
+[ -f ~/.personal.sh ] && source ~/.personal.sh
 
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
