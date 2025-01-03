@@ -5,12 +5,15 @@ CODESPACES_DOTFILES="/workspaces/.codespaces/.persistedshare/dotfiles"
 DOTFILES=$(pwd)
 
 function create_symlinks() {
-  ln -sf $1/.zshrc $HOME/.zshrc
-  ln -sf $1/.config/nvim/init.vim $HOME/.config/nvim/init.vim
-  ln -sf $1/.vimrc $HOME/.vimrc
-  ln -sf $1/.tmux.conf $HOME/.tmux.conf
-  ln -sf $1/.psqlrc $HOME/.psqlrc
-  ln -sf $1/.gitconfig $HOME/.gitconfig
+  cp $1/.zshrc $HOME/.zshrc
+  cp -r $1/.config/nvim/* $HOME/.config/nvim/.
+  cp $1/.aliases $HOME/.aliases
+  cp $1/.zsh_profile $HOME/.zsh_profile
+  cp $1/.config/nvim/init.vim
+  cp $1/.vimrc $HOME/.vimrc
+  cp $1/.tmux.conf $HOME/.tmux.conf
+  cp $1/.psqlrc $HOME/.psqlrc
+  cp $1/.gitconfig $HOME/.gitconfig
 }
 
 function install_packages() {

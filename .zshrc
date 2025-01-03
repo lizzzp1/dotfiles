@@ -72,9 +72,27 @@ PROMPT='${dir_info}$(git_prompt_info) %(1j.$promptjobs.$promptnormal)'
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
+
+del_branches() {
+  git branch | grep -v 'main' | grep -v 'dev' | grep -v "$1" | xargs git branch -D
+}
+
 export PATH=$PATH:/usr/local/go/bin
 export GOPATH=$HOME/go
 export GOROOT=/usr/local/go
+
+#zscaler
+export CERT_PATH="/Users/$(whoami)/ca_certs/zscaler-custom-ca-bundle.pem"
+export CERT_DIR="/Users/$(whoami)/ca_certs/"
+export SSL_CERT_FILE=${CERT_PATH}
+export SSL_CERT_DIR=${CERT_DIR}
+export REQUESTS_CA_BUNDLE=${CERT_PATH} # PIP,
+export NODE_EXTRA_CA_CERTS=${CERT_PATH} # NPM
+export AWS_CA_BUNDLE=${CERT_PATH}
+export PIP_CERT=${CERT_PATH}
+export HTTPLIB2_CA_CERTS=${CERT_PATH}
+export SSL_CERT_FILE="${CERT_PATH}"
+export GAM_CA_FILE=${CERT_PATH}
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.zsh_files/paths ] && source ~/.zsh_files/paths
