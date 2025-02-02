@@ -23,7 +23,7 @@ function install_packages() {
 }
 
 function lsp_setup() {
-  gem install solargraph
+  gem install ruby-lsp
 }
 
 function tmux_setup() {
@@ -44,11 +44,12 @@ function nvim_setup() {
 }
 
 
+nvim_setup
+install_packages
+tmux_setup
+
 if [ -e "$CODESPACES_DOTFILES" ]; then
-  nvim_setup
-  install_packages
   create_symlinks $CODESPACES_DOTFILES
-  tmux_setup
 else
   create_symlinks $DOTFILES
 fi

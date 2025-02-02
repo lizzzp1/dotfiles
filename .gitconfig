@@ -1,20 +1,17 @@
-[user]
-	name = Liz
-	email = lizpny@pm.me
 [core]
-	editor = nvim
+  editor = nvim
 [alias]
   co = checkout
   gs = status
   gp = pull
   gp = push
 [diff]
-    tool = kitty
-    guitool = kitty.gui
+  tool = kitty
+  guitool = kitty.gui
 [difftool]
-    prompt = false
-    trustExitCode = true
+  prompt = false
+  trustExitCode = true
 [difftool "kitty"]
-    cmd = kitten diff $LOCAL $REMOTE
+   cmd = kitten diff $LOCAL $REMOTE
 [difftool "kitty.gui"]
-    cmd = kitten diff $LOCAL $REMOTE
+   cmd = kitten diff $LOCAL $REMOTE

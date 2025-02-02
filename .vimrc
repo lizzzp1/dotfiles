@@ -68,6 +68,7 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-rhubarb'
 Plug 'preservim/nerdtree'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'jremmen/vim-ripgrep'
@@ -77,7 +78,7 @@ Plug 'ayu-theme/ayu-vim'
 Plug 'itchyny/lightline.vim'
 Plug 'vim-test/vim-test'
 Plug 'jacoborus/tender.vim'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.6' }
@@ -101,10 +102,6 @@ function! GitStatus()
 endfunction
 
 let g:rg_highlight = 1
-let g:LanguageClient_serverCommands = {
-    \ 'ruby': ['~/.rbenv/shims/solargraph'],
-    \ }
-
 
 " ctrlP
 set runtimepath^=~/.vim/bundle/ctrlp.vim
@@ -254,8 +251,7 @@ set statusline+=\ %c,
 set statusline+=%l/%L
 set statusline+=\ %{LinterStatus()}
 set statusline=%{FugitiveStatusline()}
-" set statusline+=%{GitStatus()}
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+set statusline+=%{GitStatus()}
 
 " faster for saves
 nmap <leader>w :w!<cr>
@@ -325,17 +321,8 @@ function! PromoteToLet()
   :normal ==
 endfunction
 
-
-" COC lsp additional settings
-nmap gd <Plug>(coc-definition)
-nmap K <Plug>(coc-hover)
-
-" remap to confirm completion
-inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
-inoremap <silent><expr> <cr> coc#pum#visible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
-" Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
+" Key mappings for LSP
+nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> gr <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> K <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
