@@ -12,9 +12,8 @@ export VISUAL='nvim'
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
-export PATH="$HOME/.rbenv/shims:$PATH"
-# export LEFTHOOK_BIN="/Users/lizpineda/.rbenv/shims/lefthook"
-#
+#export PATH="$HOME/.asdf/shims:$PATH"
+#. $HOME/.asdf/asdf.sh
 
 # Execute code in the background to not affect the current session
 # https://htr3n.github.io/2018/07/faster-zsh/
@@ -71,7 +70,6 @@ PROMPT='${dir_info}$(git_prompt_info) %(1j.$promptjobs.$promptnormal)'
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
 
 del_branches() {
   git branch | grep -v 'main' | grep -v 'dev' | grep -v "$1" | xargs git branch -D

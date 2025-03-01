@@ -9,11 +9,7 @@ local lspconfig = require'lspconfig'
 local util = require'lspconfig/util'
 
 -- Go Language Server
-lspconfig.gopls.setup{
-    cmd = { "gopls" },
-    filetypes = { "go", "gomod", "gowork", "gotmpl" },
-    root_dir = util.root_pattern("go.mod", ".git"),
-}
+lspconfig.gopls.setup({})
 
 -- Ruby Language Server
 lspconfig.ruby_lsp.setup{

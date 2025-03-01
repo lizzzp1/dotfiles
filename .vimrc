@@ -185,11 +185,11 @@ let g:ale_fixers = {
   \ 'ruby':        ['rubocop'],
   \ 'yaml':        ['prettier'],
   \ 'html':        ['prettier'],
+  \ 'go': 	   ['gopls'],
   \ '*':           ['remove_trailing_lines', 'trim_whitespace']
   \ }
 
 " Visual
-
 let g:ale_fix_on_save = 1
 let g:ale_echo_msg_error_str = 'Error'
 let g:ale_echo_msg_format = '%s'
@@ -200,15 +200,25 @@ let g:ale_statusline_format = ['❌%d', '⚠️ %d', '']
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 0
 let g:ale_completion_enabled = 1
+" Jump to next error
+nmap <silent> <leader>e :lnext<CR>
+" Jump to previous error
+nmap <silent> <leader>E :lprev<CR>
+command! ALEInfo :ALEInfo
+
+
 
 " JS
 " let b:ale_fixers = ['prettier']
 " let g:ale_lint_on_text_changed = 0
 
 " Rubocop
-
 let g:ale_ruby_rubocop_auto_correct_all = 1
 let g:ale_ruby_rubocop_executable = "bundle"
+
+" Go
+let g:go_def_mode='gopls'
+let g:go_info_mode='gopls'
 
 inoremap <tab> <c-r>=InsertTabWrapper()<cr>
 inoremap <s-tab> <c-n>
@@ -321,8 +331,33 @@ function! PromoteToLet()
   :normal ==
 endfunction
 
+" Launch gopls when Go files are in use
+let g:LanguageClient_serverCommands = {
+       \ 'go': ['gopls']
+       \ }
+" Run gofmt on save
+" autocmd BufWritePre *.go :call LanguageClient#textDocument_formatting_sync()
+
 " Key mappings for LSP
-nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
-nnoremap <silent> gr <cmd>lua vim.lsp.buf.references()<CR>
-nnoremap <silent> K <cmd>lua vim.lsp.buf.hover()<CR>
-nnoremap <silent> <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
+" Go to definition (gd)
+nnoremap gd <Cmd>lua vim.lsp.buf.definition()<CR>
+" Go to declaration (gD)
+nnoremap gD <Cmd>lua vim.lsp.buf.declaration()<CR>
+" Go to type definition (gt)
+nnoremap gt <Cmd>lua vim.lsp.buf.type_definition()<CR>
+" Find references (gr)
+nnoremap gr <Cmd>lua vim.lsp.buf.references()<CR>
+" Rename symbol (rn)
+nnoremap rn <Cmd>lua vim.lsp.buf.rename()<CR>
+" Hover (K)
+nnoremap K <Cmd>lua vim.lsp.buf.hover()<CR>
+" Format code (<Leader>f)
+nnoremap <Leader>f <Cmd>lua vim.lsp.buf.formatting()<CR>
+" Code actions (<Leader>a)
+nnoremap <Leader>a <Cmd>lua vim.lsp.buf.code_action()<CR>
+" Show diagnostics (<Leader>d)
+nnoremap <Leader>d <Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
+" Jump to next diagnostic ([d)
+nnoremap [d <Cmd>lua vim.lsp.diagnostic.goto_next()<CR>
+" Jump to previous diagnostic (])d)
+nnoremap ]d <Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
