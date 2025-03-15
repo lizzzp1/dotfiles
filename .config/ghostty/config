@@ -1,0 +1,9 @@
+font-size = 20
+font-family = BerkeleyMono Nerd Font Mono
+theme = Arthur
+
+macos-non-native-fullscreen = true
+
+window-titlebar-background = #ffffff
+cursor-color = #928374
+background = #1d2021

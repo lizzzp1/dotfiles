@@ -3,13 +3,24 @@ let &packpath = &runtimepath
 source ~/.vimrc
 
 " Load the LSP configuration
-
 lua << EOF
 local lspconfig = require'lspconfig'
 local util = require'lspconfig/util'
 
 -- Go Language Server
-lspconfig.gopls.setup({})
+lspconfig.gopls.setup{
+    cmd = {"gopls"},
+    filetypes = {"go"},
+    root_dir = util.root_pattern("go.mod", ".git"),
+    settings = {
+        gopls = {
+            analyses = {
+                unusedparams = true,
+            },
+            staticcheck = true,
+        },
+    },
+}
 
 -- Ruby Language Server
 lspconfig.ruby_lsp.setup{
@@ -17,11 +28,15 @@ lspconfig.ruby_lsp.setup{
     filetypes = { "ruby", "eruby" },
     root_dir = util.root_pattern("Gemfile", ".git"),
     init_options = {
-        formatter = "auto"
+        formatter = "auto",
+        diagnostics = true,
+        formatting = true,
+        completion = {
+            auto_complete = true,
+            show_documentation = true,
+        },
     },
-    single_file_support = true,
 }
-
 -- Python Language Server
 local root_files = {
     'pyproject.toml',

@@ -14,6 +14,9 @@ set hlsearch " Highlight search matches
 set incsearch " Start searching while typing
 set ignorecase " Case insensitive searches...
 set smartcase
+set completeopt=menuone,noinsert,noselect
+autocmd TextChangedI * lua vim.lsp.buf.completion()
+nnoremap <silent> K :lua vim.lsp.buf.hover()<CR>
 
 filetype on
 filetype indent on
