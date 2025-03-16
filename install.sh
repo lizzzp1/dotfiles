@@ -5,15 +5,15 @@ CODESPACES_DOTFILES="/workspaces/.codespaces/.persistedshare/dotfiles"
 DOTFILES=$(pwd)
 
 function create_symlinks() {
-  cp $1/.zshrc $HOME/.zshrc
-  cp -r $1/.config/nvim/* $HOME/.config/nvim/.
-  cp $1/.aliases $HOME/.aliases
-  cp $1/.zsh_profile $HOME/.zsh_profile
-  cp $1/.config/nvim/init.vim
-  cp $1/.vimrc $HOME/.vimrc
-  cp $1/.tmux.conf $HOME/.tmux.conf
-  cp $1/.psqlrc $HOME/.psqlrc
-  cp $1/.gitconfig $HOME/.gitconfig
+  ln -sf $1/.zshrc $HOME/.zshrc
+  ln -sf $1/.config/nvim/* $HOME/.config/nvim/.
+  ln -sf $1/.aliases $HOME/.aliases
+  ln -sf $1/.zsh_profile $HOME/.zsh_profile
+  ln -sf $1/.config/nvim/init.vim $HOME/.config/nvim/init.vim
+  ln -sf $1/.vimrc $HOME/.vimrc
+  ln -sf $1/.tmux.conf $HOME/.tmux.conf
+  ln -sf $1/.psqlrc $HOME/.psqlrc
+  ln -sf $1/.gitconfig $HOME/.gitconfig
 }
 
 function install_packages() {
@@ -34,28 +34,7 @@ function tmux_setup() {
   fi
 }
 
-function nvim_setup() {
-  sudo mkdir -p ~/.config/nvim
-  sudo apt-get install -y neovim
-  which nvim || echo "Neovim did not install correctly."
-  # Install vim-plug if it's not installed
-  sudo curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-}
-
-
-nvim_setup
+create_symlinks $CODESPACES_DOTFILES
 install_packages
+lsp_setup
 tmux_setup
-
-if [ -e "$CODESPACES_DOTFILES" ]; then
-  create_symlinks $CODESPACES_DOTFILES
-else
-  create_symlinks $DOTFILES
-fi
-
-if [ -d "$HOME/nvim/usr/share/nvim/runtime" ]; then
-  echo "export VIMRUNTIME=$HOME/nvim/usr/share/nvim/runtime" >> ~/.zshrc
-fi
-
-echo "Dotfile setup complete."
