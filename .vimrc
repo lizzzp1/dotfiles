@@ -7,7 +7,6 @@ set noswapfile
 set rtp+=/opt/homebrew/opt/fz
 set report=0 " Always report changed lines
 set autowrite " Save buffer changes to disk
-set omnifunc=ale#completion#OmniFunc
 set tags=tags;/
 set relativenumber
 set hlsearch " Highlight search matches
@@ -15,7 +14,6 @@ set incsearch " Start searching while typing
 set ignorecase " Case insensitive searches...
 set smartcase
 set completeopt=menuone,noinsert,noselect
-autocmd TextChangedI * lua vim.lsp.buf.completion()
 nnoremap <silent> K :lua vim.lsp.buf.hover()<CR>
 
 filetype on
@@ -42,7 +40,7 @@ nnoremap <C-a>j :wincmd j<CR>
 nnoremap <C-a>k :wincmd k<CR>
 nnoremap <C-a>l :wincmd l<CR>
 
-autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
+autocmd FileType ruby, go setlocal expandtab shiftwidth=2 tabstop=2
 autocmd FileType eruby setlocal expandtab shiftwidth=2 tabstop=2
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
@@ -85,6 +83,14 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.6' }
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'stevearc/dressing.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'MunifTanjim/nui.nvim'
+Plug 'MeanderingProgrammer/render-markdown.nvim'
+Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
+Plug 'saghen/blink.cmp', { 'do': 'cargo build --release' }
+Plug 'rafamadriz/friendly-snippets'
 
 if empty(glob('~/.local/share/nvim/plugged'))
   call plug#install()
@@ -178,6 +184,7 @@ let g:ale_linters = {
   \ 'markdown':    ['prettier'],
   \ 'eruby':       ['erblint'],
   \ 'ruby':        ['rubocop'],
+  \ 'python':      ['flake8', 'mypy'],
   \  'go': 	   ['gopls']
   \ }
 
@@ -189,7 +196,7 @@ let g:ale_fixers = {
   \ 'yaml':        ['prettier'],
   \ 'html':        ['prettier'],
   \ 'go': 	   ['gopls'],
-  \ '*':           ['remove_trailing_lines', 'trim_whitespace']
+  \ '*':           ['remove_trailing_lines', 'trim_whitespace'],
   \ }
 
 " Visual
@@ -202,7 +209,9 @@ let g:ale_sign_warning = '⚠️'
 let g:ale_statusline_format = ['❌%d', '⚠️ %d', '']
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 0
-let g:ale_completion_enabled = 1
+let g:ale_completion_enabled = 0
+let g:ale_lint_on_save = 1
+let g:ale_disable_lsp = 1
 " Jump to next error
 nmap <silent> <leader>e :lnext<CR>
 " Jump to previous error
@@ -210,6 +219,17 @@ nmap <silent> <leader>E :lprev<CR>
 command! ALEInfo :ALEInfo
 
 
+" Explicit Python ALE setup
+let g:ale_python_black_executable = 'black'
+let g:ale_python_isort_executable = 'isort'
+let g:ale_python_black_options = '--line-length 88'
+let g:ale_python_isort_options = '--profile black'
+
+" Force manual format on save if ALE fails
+augroup PythonFormatting
+  autocmd!
+  autocmd BufWritePre *.py execute ':ALEFix'
+augroup END
 
 " JS
 " let b:ale_fixers = ['prettier']
@@ -226,13 +246,17 @@ let g:go_info_mode='gopls'
 inoremap <tab> <c-r>=InsertTabWrapper()<cr>
 inoremap <s-tab> <c-n>
 
-" Smart tab autocomplete behavior
 function! InsertTabWrapper()
   let col = col('.') - 1
   if !col || getline('.')[col - 1] !~ '\k'
     return "\<tab>"
   else
-    return "\<c-p>"
+    " Use LSP completion if available, fallback to built-in
+    if luaeval('vim.lsp.get_active_clients({bufnr=0})[1] ~= nil')
+      return "\<C-x>\<C-o>"
+    else
+      return "\<c-p>"
+    endif
   endif
 endfunction
 

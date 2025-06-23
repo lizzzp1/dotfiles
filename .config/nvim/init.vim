@@ -3,15 +3,18 @@ let &packpath = &runtimepath
 source ~/.vimrc
 lua require("copilotchat_setup")
 
-" Load the LSP configuration
 lua << EOF
 local lspconfig = require'lspconfig'
 local util = require'lspconfig/util'
+local blink_cmp = require('blink.cmp')
+local capabilities = blink_cmp.get_lsp_capabilities()
+lspconfig['lua_ls'].setup({ capabilities = capabilities })
 
 -- Go Language Server
 lspconfig.gopls.setup{
     cmd = {"gopls"},
     filetypes = {"go"},
+    capabilities = capabilities,
     root_dir = util.root_pattern("go.mod", ".git"),
     settings = {
         gopls = {
@@ -66,9 +69,40 @@ lspconfig.pyright.setup{
             analysis = {
                 autoSearchPaths = true,
                 diagnosticMode = "openFilesOnly",
-                useLibraryCodeForTypes = true
-            }
+                useLibraryCodeForTypes = true,
+                typeCheckingMode = "basic",
+            },
         }
-    },
+    }
 }
+
+local avante = require('avante')
+local config = {
+  windows = {
+    ask = {
+      floating = true,
+      border = "rounded",
+      start_insert = true
+    }
+  }
+}
+avante.setup(config)
+
+
+require('blink.cmp').setup({
+  keymap = { preset = 'default' },
+  appearance = {
+    nerd_font_variant = 'mono'
+  },
+  completion = {
+    documentation = { auto_show = true }
+  },
+  fuzzy = {
+    prebuilt_binaries = {
+       force_version = '1.0.0',
+    },
+    implementation = "prefer_rust_with_warning",
+  }
+})
+
 EOF
