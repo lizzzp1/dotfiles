@@ -1,6 +1,7 @@
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath = &runtimepath
 source ~/.vimrc
+lua require("copilotchat_setup")
 
 " Load the LSP configuration
 lua << EOF
@@ -23,20 +24,26 @@ lspconfig.gopls.setup{
 }
 
 -- Ruby Language Server
-lspconfig.ruby_lsp.setup{
-    cmd = { "ruby-lsp" },
-    filetypes = { "ruby", "eruby" },
-    root_dir = util.root_pattern("Gemfile", ".git"),
-    init_options = {
-        formatter = "auto",
-        diagnostics = true,
-        formatting = true,
-        completion = {
-            auto_complete = true,
-            show_documentation = true,
-        },
+lspconfig.ruby_lsp.setup({
+  cmd = { "ruby-lsp" },
+  filetypes = { "ruby", "eruby" },
+  root_dir = util.root_pattern("Gemfile", ".git"),
+  init_options = {
+    formatter = "auto",
+    diagnostics = true,
+    formatting = true,
+    addonSettings = {
+      ["Ruby LSP Rails"] = {
+        enablePendingMigrationsPrompt = false,
+      },
     },
-}
+    completion = {
+      auto_complete = true,
+      show_documentation = true,
+    },
+  },
+})
+
 -- Python Language Server
 local root_files = {
     'pyproject.toml',
