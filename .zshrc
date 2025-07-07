@@ -79,24 +79,11 @@ export PATH=$PATH:/usr/local/go/bin
 export GOPATH=$HOME/go
 export GOROOT=/usr/local/go
 
-#zscaler
-export CERT_PATH="/Users/$(whoami)/ca_certs/zscaler-custom-ca-bundle.pem"
-export CERT_DIR="/Users/$(whoami)/ca_certs/"
-export SSL_CERT_FILE=${CERT_PATH}
-export SSL_CERT_DIR=${CERT_DIR}
-export REQUESTS_CA_BUNDLE=${CERT_PATH} # PIP,
-export NODE_EXTRA_CA_CERTS=${CERT_PATH} # NPM
-export AWS_CA_BUNDLE=${CERT_PATH}
-export PIP_CERT=${CERT_PATH}
-export HTTPLIB2_CA_CERTS=${CERT_PATH}
-export SSL_CERT_FILE="${CERT_PATH}"
-export GAM_CA_FILE=${CERT_PATH}
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.zsh_files/paths ] && source ~/.zsh_files/paths
 [ -f $ZSH/oh-my-zsh.sh ] && source $ZSH/oh-my-zsh.sh
 [ -f ~/.aliases ] && source ~/.aliases
 [ -f ~/.personal.sh ] && source ~/.personal.sh
 
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
+# Created by `pipx` on 2025-07-07 10:59:00
+export PATH="$PATH:/Users/lizpine/.local/bin"

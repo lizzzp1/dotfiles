@@ -91,6 +91,8 @@ Plug 'MeanderingProgrammer/render-markdown.nvim'
 Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
 Plug 'saghen/blink.cmp', { 'do': 'cargo build --release' }
 Plug 'rafamadriz/friendly-snippets'
+Plug 'github/copilot.vim'
+Plug 'CopilotC-Nvim/CopilotChat.nvim'
 
 if empty(glob('~/.local/share/nvim/plugged'))
   call plug#install()
