@@ -99,6 +99,15 @@ else
     echo "tmux plugin manager already installed."
 fi
 
+# --- tmux resurrect for saving sessions ---
+if [ ! -d "$HOME/.tmux/plugins/tmux-resurrect" ]; then
+    echo "Installing tmux resurrect plugin..."
+    git clone https://github.com/tmux-plugins/tmux-resurrect ~/clone/path
+    tmux source-file ~/.tmux.conf
+else
+    echo "tmux ressurect is already installed."
+fi
+
 # --- vim-plug for Vim plugin management ---
 if [ ! -f "$HOME/.vim/autoload/plug.vim" ]; then
     echo "Installing vim-plug for Vim..."
@@ -108,4 +117,5 @@ else
     echo "vim-plug already installed."
 fi
 
-echo "All done! Restart your terminal to use the new configuration."
+
+echo "All done!"
