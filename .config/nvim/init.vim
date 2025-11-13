@@ -1,14 +1,29 @@
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath = &runtimepath
 source ~/.vimrc
-lua require("copilotchat_setup")
 
 lua << EOF
+
+require("copilotchat_setup")
+require('telescope').setup{}
 local lspconfig = require'lspconfig'
 local util = require'lspconfig/util'
 local blink_cmp = require('blink.cmp')
 local capabilities = blink_cmp.get_lsp_capabilities()
 lspconfig['lua_ls'].setup({ capabilities = capabilities })
+
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = false,
+  },
+}
+
+vim.cmd [[
+  highlight! link @function Function
+  highlight! link @variable Identifier
+  highlight! link @string String
+]]
 
 -- Go Language Server
 lspconfig.gopls.setup{
@@ -76,19 +91,6 @@ lspconfig.pyright.setup{
     }
 }
 
-local avante = require('avante')
-local config = {
-  windows = {
-    ask = {
-      floating = true,
-      border = "rounded",
-      start_insert = true
-    }
-  }
-}
-avante.setup(config)
-
-
 require('blink.cmp').setup({
   keymap = { preset = 'default' },
   appearance = {
@@ -101,7 +103,7 @@ require('blink.cmp').setup({
     prebuilt_binaries = {
        force_version = '1.0.0',
     },
-    implementation = "prefer_rust_with_warning",
+    implementation = "prefer_rust",
   }
 })
 

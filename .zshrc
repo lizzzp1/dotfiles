@@ -75,9 +75,30 @@ del_branches() {
   git branch | grep -v 'main' | grep -v 'dev' | grep -v "$1" | xargs git branch -D
 }
 
+up_migrate() {
+  for v in $(bin/rails db:migrate:status | grep "down" | awk '{print $2}'); do
+    bin/rails db:migrate:up VERSION=$v
+  done
+}
+down_migrate() {
+  for v in $(bin/rails db:migrate:status | grep "up" | awk '{print $2}'); do
+    bin/rails db:migrate:down VERSION=$v
+  done
+}
+
+branch() {
+  git checkout $(git branch | grep "$1") || echo "Branch '$1' does not exist."
+}
+
+mod_tests() {
+ for s in $(git status | grep "spec" | awk '{print $2}'); do bin/rspec $s; done
+}
+
 export PATH=$PATH:/usr/local/go/bin
 export GOPATH=$HOME/go
 export GOROOT=/usr/local/go
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.zsh_files/paths ] && source ~/.zsh_files/paths
@@ -85,5 +106,8 @@ export GOROOT=/usr/local/go
 [ -f ~/.aliases ] && source ~/.aliases
 [ -f ~/.personal.sh ] && source ~/.personal.sh
 
+bindkey -v
+
 # Created by `pipx` on 2025-07-07 10:59:00
 export PATH="$PATH:/Users/lizpine/.local/bin"
+[[ ! -f $SPRING_DIRECTORY/spring-cli/init.sh ]] || source $SPRING_DIRECTORY/spring-cli/init.sh

@@ -1,5 +1,5 @@
-alias c='git commit'
-alias d='git diff'
+alias gc='git commit'
+alias gd='git diff'
 alias aa='git add . && git status -s'
 alias gp='git pull'
 alias gap='git dd . --patch'
@@ -8,7 +8,6 @@ alias gs='git status'
 alias gp='git branch --merged | egrep -v "(^\*|master|staging)" | xargs git branch -d'
 alias co='git checkout'
 alias g='git'
-alias gd='git difftool --no-symlinks --dir-diff'
 
 alias spec='bin/rspec'
 alias rf='bin/rails rubocop -A'
@@ -21,7 +20,8 @@ alias tma='tmux attach -t'
 alias tmn='tmux new -s'
 alias tmm='tmux new -s main'
 
-alias s='source ~/.zsh_profile'
+alias s='source ~/.zshrc'
+alias sb='source ~/.bashrc'
 
 export BUNDLER_EDITOR=nvim
 export EDITOR=nvim

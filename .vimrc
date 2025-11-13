@@ -40,7 +40,7 @@ nnoremap <C-a>j :wincmd j<CR>
 nnoremap <C-a>k :wincmd k<CR>
 nnoremap <C-a>l :wincmd l<CR>
 
-autocmd FileType ruby, go setlocal expandtab shiftwidth=2 tabstop=2
+autocmd FileType ruby,go,sh setlocal expandtab shiftwidth=2 tabstop=2
 autocmd FileType eruby setlocal expandtab shiftwidth=2 tabstop=2
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
@@ -75,20 +75,19 @@ Plug 'jlanzarotta/bufexplorer'
 Plug 'jremmen/vim-ripgrep'
 Plug 'dense-analysis/ale'
 Plug 'AndrewRadev/splitjoin.vim'
-Plug 'ayu-theme/ayu-vim'
 Plug 'itchyny/lightline.vim'
 Plug 'vim-test/vim-test'
 Plug 'jacoborus/tender.vim'
 Plug 'neovim/nvim-lspconfig'
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.6' }
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'stevearc/dressing.nvim'
-Plug 'nvim-lua/plenary.nvim'
 Plug 'MunifTanjim/nui.nvim'
 Plug 'MeanderingProgrammer/render-markdown.nvim'
-Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
 Plug 'saghen/blink.cmp', { 'do': 'cargo build --release' }
 Plug 'rafamadriz/friendly-snippets'
 Plug 'github/copilot.vim'
@@ -107,15 +106,7 @@ endif
 syntax enable
 colorscheme tender
 
-function! GitStatus()
-  let [a,m,r] = GitGutterGetHunkSummary()
-  return printf('+%d ~%d -%d', a, m, r)
-endfunction
-
 let g:rg_highlight = 1
-
-" ctrlP
-set runtimepath^=~/.vim/bundle/ctrlp.vim
 
 " RSPEC
 let g:test#preserve_screen = 1
@@ -150,7 +141,7 @@ if executable('rg')
 endif
 
 if executable('fzf')
-  set rtp+=/usr/local/opt/fzf
+  set rtp+=/opt/homebrew/opt/fzf
 endif
 
 " Keymaps
@@ -185,7 +176,7 @@ let g:ale_linters = {
   \ 'json':        ['jsonlint'],
   \ 'markdown':    ['prettier'],
   \ 'eruby':       ['erblint'],
-  \ 'ruby':        ['rubocop'],
+  \ 'ruby':        [],
   \ 'python':      ['flake8', 'mypy'],
   \  'go': 	   ['gopls']
   \ }
@@ -213,7 +204,7 @@ let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 0
 let g:ale_completion_enabled = 0
 let g:ale_lint_on_save = 1
-let g:ale_disable_lsp = 1
+let g:ale_disable_lsp = 0
 " Jump to next error
 nmap <silent> <leader>e :lnext<CR>
 " Jump to previous error
@@ -290,7 +281,6 @@ set statusline+=\ %c,
 set statusline+=%l/%L
 set statusline+=\ %{LinterStatus()}
 set statusline=%{FugitiveStatusline()}
-set statusline+=%{GitStatus()}
 
 " faster for saves
 nmap <leader>w :w!<cr>
@@ -298,11 +288,8 @@ nmap <leader>w :w!<cr>
 " Fuzzy search
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
 if executable('ag')
-  " Use Ag over Grep
   set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in fzf for listing files. Lightning fast and respects .gitignore
-  let $FZF_DEFAULT_COMMAND = 'ag --literal --files-with-matches --nocolor --hidden -g ""'
+  let $FZF_DEFAULT_COMMAND = 'ag -g "" --hidden'
 endif
 
 " NerdTree

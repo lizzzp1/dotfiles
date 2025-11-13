@@ -1,121 +1,153 @@
-#!/bin/bash
-set -e
-
-echo "Setting up NeoVim, tmux, asdf, LSPs, and dotfiles for macOS..."
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Setting up NeoVim, tmux, asdf, LSPs, and dotfiles for macOS or Linux..."
 
 DOTFILES="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+OS="$(uname -s)"
 
-# --- Homebrew install/check ---
-if ! command -v brew >/dev/null 2>&1; then
+if [ "$OS" == "Darwin" ]; then
+  PACKAGE_MANAGER="brew"
+  INSTALL_CMD="brew install"
+elif [ "$OS" == "Linux" ]; then
+  PACKAGE_MANAGER="apt"
+  INSTALL_CMD="sudo apt-get install -y"
+else
+  echo "Unsupported OS"
+  exit 1
+fi
+
+if [[ "$PACKAGE_MANAGER" == "brew" ]]; then
+  if ! command -v brew >/dev/null 2>&1; then
     echo "Homebrew is not installed. Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    # Add Homebrew to PATH for current script execution
     if [ -d "/opt/homebrew/bin" ]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+      eval "$(/opt/homebrew/bin/brew shellenv)"
     elif [ -d "/usr/local/bin" ]; then
-        eval "$(/usr/local/bin/brew shellenv)"
+      eval "$(/usr/local/bin/brew shellenv)"
     fi
+  fi
+else
+  echo "Updating apt..."
+  sudo apt-get update -y
 fi
 
-# --- asdf install & setup ---
-if ! command -v asdf >/dev/null 2>&1; then
-    echo "Installing asdf version manager..."
-    brew install asdf
-fi
-
-if ! grep -q 'asdf.sh' "$HOME/.zshrc"; then
-    echo "Adding asdf init to .zshrc"
-    echo -e '\n. $(brew --prefix asdf)/libexec/asdf.sh' >> "$HOME/.zshrc"
-fi
-
-# Source asdf for current shell session
-. "$(brew --prefix asdf)/libexec/asdf.sh"
-
-# --- asdf plugins for common languages ---
-for plugin in nodejs python ruby golang; do
-    if ! asdf plugin-list | grep -q $plugin; then
-        echo "Adding asdf plugin: $plugin"
-        asdf plugin-add $plugin
-    fi
+for pkg in git tmux neovim; do
+  if ! command -v "$pkg" >/dev/null 2>&1; then
+    echo "Installing $pkg..."
+    $INSTALL_CMD "$pkg"
+  fi
 done
 
-# --- Symlinks ---
+if ! command -v asdf >/dev/null 2>&1; then
+  echo "Installing asdf version manager..."
+  if [[ "$PACKAGE_MANAGER" == "brew" ]]; then
+    brew install asdf
+    . "$(brew --prefix asdf)/libexec/asdf.sh"
+  else
+    git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.0
+    echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
+    echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.bashrc
+  fi
+fi
+
+for plugin in nodejs python ruby golang; do
+  if ! asdf plugin list | grep -q "$plugin"; then
+    echo "Adding asdf plugin: $plugin"
+    asdf plugin add "$plugin"
+  fi
+done
+
+if ! command -v pipx >/dev/null 2>&1; then
+  echo "Installing pipx..."
+  $INSTALL_CMD pipx || $INSTALL_CMD python3-pip
+  python3 -m pip install --user pipx
+  python3 -m pipx ensurepath
+fi
+
 echo "Symlinking dotfiles..."
 mkdir -p "$HOME/.config/nvim"
 mkdir -p "$HOME/.config/ghostty"
 ln -sf "$DOTFILES/.zshrc" "$HOME/.zshrc"
 ln -sf "$DOTFILES/.aliases" "$HOME/.aliases"
-ln -sf "$DOTFILES/.zsh_profile" "$HOME/.zsh_profile"
 ln -sf "$DOTFILES/.vimrc" "$HOME/.vimrc"
 ln -sf "$DOTFILES/.tmux.conf" "$HOME/.tmux.conf"
 ln -sf "$DOTFILES/.psqlrc" "$HOME/.psqlrc"
 ln -sf "$DOTFILES/.gitconfig" "$HOME/.gitconfig"
 ln -sf "$DOTFILES/.config/ghostty" "$HOME/.config/ghostty"
+if [ -f "$DOTFILES/.bashrc" ]; then
+  ln -sf "$DOTFILES/.bashrc" "$HOME/.bashrc"
+fi
+
+echo "Symlinking nvim config recursively..."
 if [ -d "$DOTFILES/.config/nvim" ]; then
-  for file in "$DOTFILES/.config/nvim/"*; do
-    ln -sf "$file" "$HOME/.config/nvim/"
+  cd "$DOTFILES/.config/nvim"
+  for item in *; do
+    ln -sfn "$DOTFILES/.config/nvim/$item" "$HOME/.config/nvim/$item"
   done
 fi
 
-# --- pipx install for Python LSP (pyright) ---
-if ! command -v pipx >/dev/null 2>&1; then
-    echo "Installing pipx..."
-    brew install pipx
-    pipx ensurepath
-fi
 echo "Installing Python LSP (pyright) with pipx..."
 pipx install --force pyright
 
-# --- Ruby LSP (using asdf Ruby if available) ---
 echo "Installing Ruby LSP (ruby-lsp)..."
 if command -v rbenv >/dev/null 2>&1; then
-    eval "$(rbenv init -)"
-    gem install ruby-lsp
+  eval "$(rbenv init -)"
+  gem install ruby-lsp
 else
-    gem install ruby-lsp --user-install
+  gem install ruby-lsp --user-install
 fi
 
-# --- Node LSPs (typescript, bash) ---
-echo "Installing Node LSPs (typescript, bash)..."
+echo "Installing Node.js and LSPs (typescript, bash)..."
 if ! command -v npm >/dev/null 2>&1; then
-    echo "npm not found. Please install Node.js using asdf or Homebrew."
+  if command -v asdf >/dev/null 2>&1; then
+    if ! asdf plugin-list | grep -q nodejs; then
+      asdf plugin-add nodejs
+    fi
+    asdf install nodejs latest
+    asdf global nodejs latest
+  elif [ "$PACKAGE_MANAGER" == "brew" ]; then
+    brew install node
+  elif [ "$PACKAGE_MANAGER" == "apt" ]; then
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+  else
+    echo "Unsupported system for Node installation."
     exit 1
+  fi
+else
+  echo "Node.js already installed."
 fi
+
 npm install -g typescript typescript-language-server bash-language-server
 
-# --- Go LSP (gopls) ---
 echo "Installing Go LSP (gopls)..."
 if asdf where golang >/dev/null 2>&1; then
-    go install golang.org/x/tools/gopls@latest
+  go install golang.org/x/tools/gopls@latest
 else
-    brew install gopls
+  brew install gopls
 fi
 
-# --- tmux plugin manager ---
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
-    echo "Installing tmux plugin manager..."
-    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  echo "Installing tmux plugin manager..."
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 else
-    echo "tmux plugin manager already installed."
+  echo "tmux plugin manager already installed."
 fi
 
-# --- tmux resurrect for saving sessions ---
 if [ ! -d "$HOME/.tmux/plugins/tmux-resurrect" ]; then
-    echo "Installing tmux resurrect plugin..."
-    git clone https://github.com/tmux-plugins/tmux-resurrect ~/clone/path
-    tmux source-file ~/.tmux.conf
+  echo "Installing tmux resurrect plugin..."
+  git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux/plugins/tmux-resurrect
+  tmux source-file ~/.tmux.conf
 else
-    echo "tmux ressurect is already installed."
+  echo "tmux resurrect is already installed."
 fi
 
-# --- vim-plug for Vim plugin management ---
 if [ ! -f "$HOME/.vim/autoload/plug.vim" ]; then
-    echo "Installing vim-plug for Vim..."
-    curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  echo "Installing vim-plug for Vim..."
+  curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 else
-    echo "vim-plug already installed."
+  echo "vim-plug already installed."
 fi
 
-
-echo "All done!"
+echo "✅ All done!"

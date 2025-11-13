@@ -1,5 +1,6 @@
 -- === CopilotChat Setup ===
-require("CopilotChat").setup {
+local copilot = require('CopilotChat')
+copilot.setup {
   agent = "copilot",
   show_help = true,
   context = {"selection", "git:staged"},
@@ -59,7 +60,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- === Telescope Agent Action Picker ===
 local copilot = require("CopilotChat")
-local actions = require("CopilotChat.actions")
+local actions = copilot.actions
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
 local conf = require("telescope.config").values
