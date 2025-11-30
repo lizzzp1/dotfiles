@@ -14,7 +14,6 @@ set incsearch " Start searching while typing
 set ignorecase " Case insensitive searches...
 set smartcase
 set completeopt=menuone,noinsert,noselect
-nnoremap <silent> K :lua vim.lsp.buf.hover()<CR>
 
 filetype on
 filetype indent on
@@ -40,7 +39,7 @@ nnoremap <C-a>j :wincmd j<CR>
 nnoremap <C-a>k :wincmd k<CR>
 nnoremap <C-a>l :wincmd l<CR>
 
-autocmd FileType ruby,go,sh setlocal expandtab shiftwidth=2 tabstop=2
+autocmd FileType ruby,go,sh,vim setlocal expandtab shiftwidth=2 tabstop=2
 autocmd FileType eruby setlocal expandtab shiftwidth=2 tabstop=2
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
@@ -168,6 +167,7 @@ nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+nnoremap <leader>fd <cmd>Telescope diagnostics<cr>
 
 " Linters
 
@@ -178,7 +178,7 @@ let g:ale_linters = {
   \ 'eruby':       ['erblint'],
   \ 'ruby':        [],
   \ 'python':      ['flake8', 'mypy'],
-  \  'go': 	   ['gopls']
+  \ 'go': 	   ['gopls']
   \ }
 
 let g:ale_fixers = {
@@ -188,7 +188,7 @@ let g:ale_fixers = {
   \ 'ruby':        ['rubocop'],
   \ 'yaml':        ['prettier'],
   \ 'html':        ['prettier'],
-  \ 'go': 	   ['gopls'],
+  \ 'go': 	       ['gopls'],
   \ '*':           ['remove_trailing_lines', 'trim_whitespace'],
   \ }
 
@@ -210,7 +210,6 @@ nmap <silent> <leader>e :lnext<CR>
 " Jump to previous error
 nmap <silent> <leader>E :lprev<CR>
 command! ALEInfo :ALEInfo
-
 
 " Explicit Python ALE setup
 let g:ale_python_black_executable = 'black'
@@ -352,7 +351,7 @@ let g:LanguageClient_serverCommands = {
        \ 'go': ['gopls']
        \ }
 " Run gofmt on save
-" autocmd BufWritePre *.go :call LanguageClient#textDocument_formatting_sync()
+"autocmd BufWritePre *.go :call LanguageClient#textDocument_formatting_sync()
 
 " Key mappings for LSP
 " Go to definition (gd)

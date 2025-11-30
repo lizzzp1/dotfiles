@@ -5,106 +5,126 @@ source ~/.vimrc
 lua << EOF
 
 require("copilotchat_setup")
-require('telescope').setup{}
-local lspconfig = require'lspconfig'
-local util = require'lspconfig/util'
-local blink_cmp = require('blink.cmp')
-local capabilities = blink_cmp.get_lsp_capabilities()
-lspconfig['lua_ls'].setup({ capabilities = capabilities })
 
-require'nvim-treesitter.configs'.setup {
-  highlight = {
-    enable = true,
-    additional_vim_regex_highlighting = false,
-  },
-}
-
-vim.cmd [[
-  highlight! link @function Function
-  highlight! link @variable Identifier
-  highlight! link @string String
-]]
-
--- Go Language Server
-lspconfig.gopls.setup{
-    cmd = {"gopls"},
-    filetypes = {"go"},
-    capabilities = capabilities,
-    root_dir = util.root_pattern("go.mod", ".git"),
+------------------------------------------------------------
+-- Go Language Server (gopls)
+------------------------------------------------------------
+vim.lsp.config.gopls = {
+  default_config = {
+    cmd = { "gopls" },
+    filetypes = { "go", "gomod", "gowork", "gotmpl" },
+    root_dir = vim.fs.dirname(vim.fs.find({ "go.mod", ".git" }, { upward = true })[1]),
     settings = {
-        gopls = {
-            analyses = {
-                unusedparams = true,
-            },
-            staticcheck = true,
+      gopls = {
+        analyses = {
+          unusedparams = true,
         },
-    },
-}
-
--- Ruby Language Server
-lspconfig.ruby_lsp.setup({
-  cmd = { "ruby-lsp" },
-  filetypes = { "ruby", "eruby" },
-  root_dir = util.root_pattern("Gemfile", ".git"),
-  init_options = {
-    formatter = "auto",
-    diagnostics = true,
-    formatting = true,
-    addonSettings = {
-      ["Ruby LSP Rails"] = {
-        enablePendingMigrationsPrompt = false,
+        staticcheck = true,
+        gofumpt = true,
       },
     },
-    completion = {
-      auto_complete = true,
-      show_documentation = true,
-    },
-  },
-})
-
--- Python Language Server
-local root_files = {
-    'pyproject.toml',
-    'setup.py',
-    'setup.cfg',
-    'requirements.txt',
-    'Pipfile',
-    'pyrightconfig.json',
-    '.git',
+  }
 }
 
-lspconfig.pyright.setup{
+vim.lsp.enable("gopls")
+
+
+------------------------------------------------------------
+-- Ruby Language Server (ruby-lsp)
+------------------------------------------------------------
+vim.lsp.config.ruby_lsp = {
+  default_config = {
+    cmd = { "ruby-lsp" },
+    filetypes = { "ruby", "eruby" },
+    root_dir = vim.fs.dirname(vim.fs.find({ "Gemfile", ".git" }, { upward = true })[1]),
+    init_options = {
+      formatter = "auto",
+      diagnostics = true,
+      formatting = true,
+      addonSettings = {
+        ["Ruby LSP Rails"] = {
+          enablePendingMigrationsPrompt = false,
+        },
+      },
+      completion = {
+        auto_complete = true,
+        show_documentation = true,
+      },
+    },
+  }
+}
+
+vim.lsp.enable("ruby_lsp")
+
+
+------------------------------------------------------------
+-- Python Language Server (pyright)
+------------------------------------------------------------
+vim.lsp.config.pyright = {
+  default_config = {
     cmd = { "pyright-langserver", "--stdio" },
     filetypes = { "python" },
     root_dir = function(fname)
-        return util.root_pattern(unpack(root_files))(fname)
+      local root_files = {
+        "pyproject.toml",
+        "setup.py",
+        "setup.cfg",
+        "requirements.txt",
+        "Pipfile",
+        "pyrightconfig.json",
+        ".git",
+      }
+      return vim.fs.dirname(vim.fs.find(root_files, { upward = true, path = fname })[1])
     end,
     settings = {
-        python = {
-            analysis = {
-                autoSearchPaths = true,
-                diagnosticMode = "openFilesOnly",
-                useLibraryCodeForTypes = true,
-                typeCheckingMode = "basic",
-            },
-        }
-    }
+      python = {
+        analysis = {
+          autoSearchPaths = true,
+          diagnosticMode = "openFilesOnly",
+          useLibraryCodeForTypes = true,
+          typeCheckingMode = "basic",
+        },
+      },
+    },
+  }
 }
 
-require('blink.cmp').setup({
-  keymap = { preset = 'default' },
+vim.lsp.enable("pyright")
+
+
+------------------------------------------------------------
+-- Blink Completion
+------------------------------------------------------------
+require("blink.cmp").setup({
+  keymap = { preset = "enter" },
   appearance = {
-    nerd_font_variant = 'mono'
+    nerd_font_variant = "mono",
+    use_nvim_cmp_icons = true
   },
   completion = {
-    documentation = { auto_show = true }
+    documentation = { auto_show = true, window = { border = "rounded" }},
+    keyword = { allow_punctuation = true, cmp = { look_ahead = true } },
+    menu = {
+      auto_show = true,
+      border = "rounded",
+      ghost_text = {
+        enabled = true,
+        show_item_with_menu = true
+      },
+      draw = {
+       columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } } },
+    },
+    list = {
+      preselect = true,
+      auto_insert = false
+    },
   },
   fuzzy = {
     prebuilt_binaries = {
-       force_version = '1.0.0',
+      force_version = "1.0.0",
     },
     implementation = "prefer_rust",
-  }
+  },
 })
 
 EOF
