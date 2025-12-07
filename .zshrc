@@ -71,29 +71,6 @@ PROMPT='${dir_info}$(git_prompt_info) %(1j.$promptjobs.$promptnormal)'
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-del_branches() {
-  git branch | grep -v 'main' | grep -v 'dev' | grep -v "$1" | xargs git branch -D
-}
-
-up_migrate() {
-  for v in $(bin/rails db:migrate:status | grep "down" | awk '{print $2}'); do
-    bin/rails db:migrate:up VERSION=$v
-  done
-}
-down_migrate() {
-  for v in $(bin/rails db:migrate:status | grep "up" | awk '{print $2}'); do
-    bin/rails db:migrate:down VERSION=$v
-  done
-}
-
-branch() {
-  git checkout $(git branch | grep "$1") || echo "Branch '$1' does not exist."
-}
-
-mod_tests() {
- for s in $(git status | grep "spec" | awk '{print $2}'); do bin/rspec $s; done
-}
-
 export PATH=$PATH:/usr/local/go/bin
 export GOPATH=$HOME/go
 export GOROOT=/usr/local/go
@@ -107,6 +84,11 @@ eval "$(rbenv init -)"
 [ -f ~/.personal.sh ] && source ~/.personal.sh
 
 bindkey -v
+
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd v edit-command-line
+
 
 # Created by `pipx` on 2025-07-07 10:59:00
 export PATH="$PATH:/Users/lizpine/.local/bin"

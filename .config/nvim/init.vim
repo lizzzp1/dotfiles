@@ -2,9 +2,27 @@ set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath = &runtimepath
 source ~/.vimrc
 
+nnoremap ]d <cmd>lua vim.diagnostic.goto_next()<CR>
+nnoremap [d <cmd>lua vim.diagnostic.goto_prev()<CR>
+
 lua << EOF
 
 require("copilotchat_setup")
+------------------------------------------------------------
+-- Diagnostics
+------------------------------------------------------------
+vim.fn.sign_define("DiagnosticSignError", {text = "", texthl = "DiagnosticSignError"})
+vim.fn.sign_define("DiagnosticSignWarn",  {text = "", texthl = "DiagnosticSignWarn"})
+vim.fn.sign_define("DiagnosticSignInfo",  {text = "", texthl = "DiagnosticSignInfo"})
+vim.fn.sign_define("DiagnosticSignHint",  {text = "", texthl = "DiagnosticSignHint"})
+
+vim.diagnostic.config({
+   virtual_text = true,
+   signs = true,
+   underline = true,
+   update_in_insert = false,
+   severity_sort = true,
+})
 
 ------------------------------------------------------------
 -- Go Language Server (gopls)

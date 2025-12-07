@@ -1,4 +1,3 @@
-runtime macros/matchit.vim
 set number
 set showmode
 set spell spelllang=en
@@ -14,6 +13,9 @@ set incsearch " Start searching while typing
 set ignorecase " Case insensitive searches...
 set smartcase
 set completeopt=menuone,noinsert,noselect
+set nocompatible
+filetype plugin on
+runtime macros/matchit.vim
 
 filetype on
 filetype indent on
@@ -72,7 +74,6 @@ Plug 'tpope/vim-rhubarb'
 Plug 'preservim/nerdtree'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'jremmen/vim-ripgrep'
-Plug 'dense-analysis/ale'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'itchyny/lightline.vim'
 Plug 'vim-test/vim-test'
@@ -113,6 +114,9 @@ let g:test#vim#term_position = "belowright"
 let test#ruby#rspec#executable = 'DISABLE_SPRING=true bin/rspec --format documentation --color'
 let test#enabled_runners = ["ruby#rspec"]
 let test#strategy = "neovim"
+" remap test commands
+nmap <silent> <leader>t :TestNearest<CR>
+nmap <silent> <leader>T :TestFile<CR>
 
 " SEARCH
 hi Search guibg=peru guifg=wheat
@@ -145,19 +149,9 @@ endif
 
 " Keymaps
 
-" Use Cmd+k / Cmd+j to jump between linter failures
-nmap <silent> <D-k> <Plug>(ale_previous)
-nmap <silent> <D-j> <Plug>(ale_next)
-
-" Use Enter to lint
-nnoremap <silent><cr> :nohlsearch<cr>:ALELint<cr>
-
 " Map Ctrl + p to open fuzzy find (FZF)
 nnoremap <c-p> :Files<cr>
 map <Leader>q :split ~/Documents/notes.md<cr>
-" remap test commands
-nmap <silent> <leader>t :TestNearest<CR>
-nmap <silent> <leader>T :TestFile<CR>
 
 " unhighlight search
 map <leader>h :noh<CR>
@@ -168,68 +162,6 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 nnoremap <leader>fd <cmd>Telescope diagnostics<cr>
-
-" Linters
-
-let g:ale_linters = {
-  \ 'javascript':  ['prettier'],
-  \ 'json':        ['jsonlint'],
-  \ 'markdown':    ['prettier'],
-  \ 'eruby':       ['erblint'],
-  \ 'ruby':        [],
-  \ 'python':      ['flake8', 'mypy'],
-  \ 'go': 	   ['gopls']
-  \ }
-
-let g:ale_fixers = {
-  \ 'css':         ['prettier'],
-  \ 'javascript':  ['prettier'],
-  \ 'markdown':    ['prettier'],
-  \ 'ruby':        ['rubocop'],
-  \ 'yaml':        ['prettier'],
-  \ 'html':        ['prettier'],
-  \ 'go': 	       ['gopls'],
-  \ '*':           ['remove_trailing_lines', 'trim_whitespace'],
-  \ }
-
-" Visual
-let g:ale_fix_on_save = 1
-let g:ale_echo_msg_error_str = 'Error'
-let g:ale_echo_msg_format = '%s'
-let g:ale_echo_msg_warning_str = 'Warning'
-let g:ale_sign_error = '❌'
-let g:ale_sign_warning = '⚠️'
-let g:ale_statusline_format = ['❌%d', '⚠️ %d', '']
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 0
-let g:ale_completion_enabled = 0
-let g:ale_lint_on_save = 1
-let g:ale_disable_lsp = 0
-" Jump to next error
-nmap <silent> <leader>e :lnext<CR>
-" Jump to previous error
-nmap <silent> <leader>E :lprev<CR>
-command! ALEInfo :ALEInfo
-
-" Explicit Python ALE setup
-let g:ale_python_black_executable = 'black'
-let g:ale_python_isort_executable = 'isort'
-let g:ale_python_black_options = '--line-length 88'
-let g:ale_python_isort_options = '--profile black'
-
-" Force manual format on save if ALE fails
-augroup PythonFormatting
-  autocmd!
-  autocmd BufWritePre *.py execute ':ALEFix'
-augroup END
-
-" JS
-" let b:ale_fixers = ['prettier']
-" let g:ale_lint_on_text_changed = 0
-
-" Rubocop
-let g:ale_ruby_rubocop_auto_correct_all = 1
-let g:ale_ruby_rubocop_executable = "bundle"
 
 " Go
 let g:go_def_mode='gopls'
@@ -256,20 +188,6 @@ endfunction
 let g:ruby_indent_assignment_style = 'variable'
 let g:ruby_indent_block_style = 'do'
 
-" Status
-function! LinterStatus() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-
-  return l:counts.total == 0 ? '✨ all good ✨' : printf(
-        \   '😞 %dW %dE',
-        \   all_non_errors,
-        \   all_errors
-        \)
-endfunction
-
 set statusline=
 set statusline+=%m
 set statusline+=\ %f
@@ -278,7 +196,7 @@ set statusline+=%=
 set statusline+=%y
 set statusline+=\ %c,
 set statusline+=%l/%L
-set statusline+=\ %{LinterStatus()}
+"set statusline+=\ %{LinterStatus()}
 set statusline=%{FugitiveStatusline()}
 
 " faster for saves

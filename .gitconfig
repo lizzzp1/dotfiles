@@ -3,7 +3,6 @@
   fsmonitor = true
   untrackedCache = true
   excludesfile = /Users/elizabeth.pine/.gitignore
-  pager = less -RFX
 [column]
   ui = auto
 [color]
@@ -12,10 +11,23 @@
   features = side-by-side line-numbers decorations
   syntax-theme = OneHalfDark
 [alias]
+  am = commit --amend
+  ap = add -p
+  s = status
+  c = commit
   co = checkout
+  cp = cherry-pick
   gs = status
   gp = pull
   gp = push
+  gpm = push origin main
+  hp = "!. ~/.githelpers && show_git_head"
+  l = "!. ~/.githelpers && pretty_git_log"
+  b = "!. ~/.githelpers && pretty_git_branch"
+  bs = "!. ~/.githelpers && pretty_git_branch_sorted"
+  ski = !git stash --keep-index
+[merge]
+  tool = vimdiff3
 [diff]
   algorithm = histogram
   colorMoved = zebra
@@ -36,12 +48,12 @@
   rebase = true
 [merge]
   conflictstyle = zdiff3
+  tool = vimdiff3
 [status]
   short = true
   branch = true
-[rerere]
-  enabled = true
 [fetch]
   prune = true
 [user]
   name = Liz
+  email = lizpny@pm.me
