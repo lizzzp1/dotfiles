@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Usage: migrate-up [up|down]
+set -e
+
+DIRECTION="${1:-up}"
+
+for v in $(bin/rails db:migrate:status | grep "$([[ $DIRECTION == up ]] && echo down || echo up)" | awk '{print $2}'); do
+  echo "Migrating $DIRECTION: $v"
+  bin/rails db:migrate:$DIRECTION VERSION=$v
+done

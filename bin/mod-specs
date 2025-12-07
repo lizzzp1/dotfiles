@@ -1,0 +1,4 @@
+#!/bin/bash
+# run any specs that are modified
+
+git status --porcelain | awk '$2 ~ /spec/ {print $2}' | while read -r s; do bin/rspec -- "$s"; done
