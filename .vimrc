@@ -90,6 +90,7 @@ Plug 'MunifTanjim/nui.nvim'
 Plug 'MeanderingProgrammer/render-markdown.nvim'
 Plug 'saghen/blink.cmp', { 'do': 'cargo build --release' }
 Plug 'rafamadriz/friendly-snippets'
+Plug 'L3MON4D3/LuaSnip'
 Plug 'github/copilot.vim'
 Plug 'CopilotC-Nvim/CopilotChat.nvim'
 
@@ -110,7 +111,7 @@ let g:rg_highlight = 1
 
 " RSPEC
 let g:test#preserve_screen = 1
-let g:test#vim#term_position = "belowright"
+let g:test#vim#term_position = "vert"
 let test#ruby#rspec#executable = 'DISABLE_SPRING=true bin/rspec --format documentation --color'
 let test#enabled_runners = ["ruby#rspec"]
 let test#strategy = "neovim"

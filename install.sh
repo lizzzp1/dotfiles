@@ -73,6 +73,7 @@ ln -sf "$DOTFILES/.vimrc" "$HOME/.vimrc"
 ln -sf "$DOTFILES/.tmux.conf" "$HOME/.tmux.conf"
 ln -sf "$DOTFILES/.psqlrc" "$HOME/.psqlrc"
 ln -sf "$DOTFILES/.gitconfig" "$HOME/.gitconfig"
+ln -sf "$DOTFILES/.githelpers" "$HOME/.githelpers"
 ln -sf "$DOTFILES/.config/ghostty" "$HOME/.config/ghostty"
 if [ -f "$DOTFILES/.bashrc" ]; then
   ln -sf "$DOTFILES/.bashrc" "$HOME/.bashrc"

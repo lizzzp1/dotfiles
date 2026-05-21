@@ -4,6 +4,7 @@ source ~/.vimrc
 
 nnoremap ]d <cmd>lua vim.diagnostic.goto_next()<CR>
 nnoremap [d <cmd>lua vim.diagnostic.goto_prev()<CR>
+autocmd BufWritePre *.rb lua vim.lsp.buf.format({ async = false })
 
 lua << EOF
 
@@ -113,8 +114,17 @@ vim.lsp.enable("pyright")
 ------------------------------------------------------------
 -- Blink Completion
 ------------------------------------------------------------
+require("luasnip.loaders.from_vscode").lazy_load()
 require("blink.cmp").setup({
   keymap = { preset = "enter" },
+  snippets = {
+    expand = function(snippet)
+      require("luasnip").lsp_expand(snippet)
+    end,
+  },
+  sources = {
+    default = { "lsp", "buffer", "path", "snippets"},
+  },
   appearance = {
     nerd_font_variant = "mono",
     use_nvim_cmp_icons = true
@@ -122,6 +132,11 @@ require("blink.cmp").setup({
   completion = {
     documentation = { auto_show = true, window = { border = "rounded" }},
     keyword = { allow_punctuation = true, cmp = { look_ahead = true } },
+    trigger = {
+      auto_show = true,
+      show_on_insert = true,
+      show_on_delete = false,
+    },
     menu = {
       auto_show = true,
       border = "rounded",
