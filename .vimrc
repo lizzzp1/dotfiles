@@ -63,6 +63,7 @@ autocmd FileType ruby setlocal path+=lib
 
 call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
 
+Plug 'rust-lang/rust.vim'
 Plug 'junegunn/vim-easy-align'
 Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-rails'
@@ -286,7 +287,7 @@ nnoremap rn <Cmd>lua vim.lsp.buf.rename()<CR>
 " Hover (K)
 nnoremap K <Cmd>lua vim.lsp.buf.hover()<CR>
 " Format code (<Leader>f)
-nnoremap <Leader>f <Cmd>lua vim.lsp.buf.formatting()<CR>
+nnoremap <Leader>f <Cmd>lua vim.lsp.buf.format{ async = true }<CR>   
 " Code actions (<Leader>a)
 nnoremap <Leader>a <Cmd>lua vim.lsp.buf.code_action()<CR>
 " Show diagnostics (<Leader>d)
@@ -295,3 +296,5 @@ nnoremap <Leader>d <Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
 nnoremap [d <Cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 " Jump to previous diagnostic (])d)
 nnoremap ]d <Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
+" Jump to implementation (gi)
+nnoremap gi <Cmd>lua vim.lsp.buf.implementation()<CR>

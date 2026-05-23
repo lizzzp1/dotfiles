@@ -7,10 +7,9 @@ nnoremap [d <cmd>lua vim.diagnostic.goto_prev()<CR>
 autocmd BufWritePre *.rb lua vim.lsp.buf.format({ async = false })
 
 lua << EOF
-
 require("copilotchat_setup")
-------------------------------------------------------------
--- Diagnostics
+
+-- Diagnostics------------------------------------------------------------
 ------------------------------------------------------------
 vim.fn.sign_define("DiagnosticSignError", {text = "", texthl = "DiagnosticSignError"})
 vim.fn.sign_define("DiagnosticSignWarn",  {text = "", texthl = "DiagnosticSignWarn"})
@@ -23,6 +22,14 @@ vim.diagnostic.config({
    underline = true,
    update_in_insert = false,
    severity_sort = true,
+})
+
+vim.api.nvim_create_autocmd("BufWritePost", {
+  pattern = "*.go",
+  callback = function()
+    vim.lsp.buf.format({ async = true })
+    vim.lsp.buf.code_action({ context = { only = { "source.organizeImports" } }, apply = true })
+  end,
 })
 
 ------------------------------------------------------------
@@ -109,6 +116,30 @@ vim.lsp.config.pyright = {
 }
 
 vim.lsp.enable("pyright")
+
+
+------------------------------------------------------------
+-- Rust Language Server (rust-analyzer)
+------------------------------------------------------------
+vim.lsp.config.rust_analyzer = {
+  default_config = {
+    cmd = { "rust-analyzer" },
+    filetypes = { "rust" },
+    root_dir = vim.fs.dirname(vim.fs.find({ "Cargo.toml", ".git" }, { upward = true })[1]),
+    settings = {
+      ["rust-analyzer"] = {
+        cargo = {
+          allFeatures = true,
+        },
+        checkOnSave = {
+          command = "clippy",
+        },
+      },
+    },
+  }
+}
+
+vim.lsp.enable("rust_analyzer")
 
 
 ------------------------------------------------------------
